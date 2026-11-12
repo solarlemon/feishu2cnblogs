@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>飞书文档字体助手 · 本地测试</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; color: #1f2329; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .bear-web-x-container { width: 760px; max-width: calc(100vw - 48px); margin: 48px auto 120px; }
+    .page-block-content, .page-block-content .zone-container { font-size: 34px; line-height: 55px; font-weight: 600; }
+    .heading-h2, .heading-h2 .zone-container { font-size: 22px; line-height: 30.8px; font-weight: 600; }
+    .docx-text-block .zone-container { font-size: 16px; line-height: 26px; }
+    .ace-line { font-size: inherit; line-height: inherit; }
+    .docx-text-block { margin: 18px 0; }
+    .docx-heading2-block { margin: 28px 0 10px; }
+    .docx-code-block, .docx-code-block .zone-container, .docx-code-block .ace-line {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 22px;
+    }
+    .docx-code-block { margin: 18px 0; padding: 12px; background: #f5f6f7; border-radius: 8px; }
+    .docx-page-block { margin-bottom: 26px; }
+  </style>
+</head>
+<body>
+  <div class="bear-web-x-container">
+    <div class="page-block root-block">
+      <div class="page-block-header"><h1 class="page-block-content page-block-align-left flash-block-content"><div class="zone-container text-editor"><div class="ace-line" data-node="true"><span data-string="true">测试文档标题</span></div></div></h1></div>
+      <div class="page-block-children">
+        <div class="block docx-text-block" data-block-type="text" data-block-id="1">
+          <div class="zone-container text-editor"><div class="ace-line" data-node="true" id="p1"><span data-string="true">这是第一段正文，用于验证字体和字号是否可以正确应用。</span></div></div>
+        </div>
+
+        <div class="block docx-heading2-block" data-block-type="heading2" data-block-id="2">
+          <div class="heading heading-h2"><div class="zone-container text-editor"><div class="ace-line" data-node="true" id="h2"><span data-string="true">二级标题</span></div></div></div>
+        </div>
+
+        <div class="block docx-text-block" data-block-type="text" data-block-id="3">
+          <div class="zone-container text-editor"><div class="ace-line" data-node="true" id="p2"><span data-string="true">第二段文字，包含 <strong>加粗内容</strong> 和一段 <a href="https://example.com" target="_blank">链接文字</a>。</span></div></div>
+        </div>
+
+        <div class="block docx-code-block" data-block-type="code" data-block-id="4">
+          <div class="code-block"><div class="zone-container text-editor"><div class="ace-line" data-node="true" id="code"><span data-string="true">const answer = 42;</span></div></div></div>
+        </div>
+
+        <div class="block docx-text-block" data-block-type="text" data-block-id="5">
+          <div class="zone-container text-editor"><div class="ace-line" data-node="true" id="p3"><span data-string="true">第三段用于测试跨段落选择，文字内容应保持完整。</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

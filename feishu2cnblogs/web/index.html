@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>飞书 → 博客园</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235b5bd6'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif'%3E飞%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="bg-glow" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">飞<span>→</span>博</div>
+    <div class="brand-text">
+      <h1>飞书 → 博客园</h1>
+      <p>把云文档变成一篇排好版的博客</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="status-dots" id="statusDots" title="配置状态">
+      <span class="dot" data-side="feishu"></span><span class="dot-label">飞书</span>
+      <span class="dot" data-side="cnblogs"></span><span class="dot-label">博客园</span>
+    </div>
+    <button class="icon-btn" id="btnTheme" title="切换深色/浅色">◐</button>
+    <button class="ghost-btn" id="btnHistory">发布记录</button>
+    <button class="ghost-btn primary-ghost" id="btnSettings">设置</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ============ 左：操作区 ============ -->
+  <section class="col-left">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="step">1</span>
+        <div>
+          <h2>选择飞书文档</h2>
+          <p class="sub">粘贴文档链接，支持 docx 和 wiki 里的文档</p>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <input id="docInput" type="text" spellcheck="false" autocomplete="off"
+               placeholder="https://xxx.feishu.cn/docx/XXXXXXXX">
+        <button class="ghost-btn sm" id="btnPaste" title="从剪贴板粘贴">粘贴</button>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-primary" id="btnPreview">
+          <span class="btn-label">读取并预览</span>
+          <span class="spinner" hidden></span>
+        </button>
+        <span class="hint" id="docHint">Ctrl + Enter 快速读取</span>
+      </div>
+    </div>
+
+    <div class="panel" id="settingsPanel" hidden>
+      <div class="panel-head">
+        <span class="step">2</span>
+        <div>
+          <h2>发布设置</h2>
+          <p class="sub">标题和标签会覆盖文档里的同名设置</p>
+        </div>
+      </div>
+
+      <label class="field">
+        <span class="field-label">标题</span>
+        <input id="titleInput" type="text" placeholder="默认使用文档标题">
+      </label>
+
+      <div class="field">
+        <span class="field-label">分类 <em>会自动补 [Markdown]</em></span>
+        <div class="chips" id="chipsCategories">
+          <input type="text" placeholder="输入后回车，例如 工具">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field-label">标签</span>
+        <div class="chips" id="chipsTags">
+          <input type="text" placeholder="输入后回车，例如 飞书">
+        </div>
+      </div>
+
+      <details class="more">
+        <summary>更多选项</summary>
+        <label class="field">
+          <span class="field-label">摘要 <em>留空自动从正文截取</em></span>
+          <textarea id="summaryInput" rows="2" placeholder="文章摘要，显示在博客列表里"></textarea>
+        </label>
+        <div class="switch-list">
+          <label class="switch">
+            <input type="checkbox" id="optAi">
+            <span class="track"></span>
+            <span class="switch-text">正文顶部加 AI 生成声明</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="optSource">
+            <span class="track"></span>
+            <span class="switch-text">末尾附飞书原文链接</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="optForceNew">
+            <span class="track"></span>
+            <span class="switch-text">强制新建（默认更新已有文章）</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="optNoImages">
+            <span class="track"></span>
+            <span class="switch-text">不上传图片（保留占位符）</span>
+          </label>
+        </div>
+      </details>
+
+      <div class="publish-row">
+        <button class="btn btn-primary btn-lg" id="btnPublish">
+          <span class="btn-label">发布到博客园</span>
+          <span class="spinner" hidden></span>
+        </button>
+        <label class="switch switch-inline">
+          <input type="checkbox" id="optPublic">
+          <span class="track"></span>
+          <span class="switch-text">直接公开</span>
+        </label>
+      </div>
+      <p class="hint hint-block" id="publishHint">默认存为草稿，确认排版后再公开发布。</p>
+    </div>
+
+    <div class="panel result-panel" id="resultPanel" hidden>
+      <div class="result-head">
+        <span class="result-icon" id="resultIcon">✓</span>
+        <div>
+          <h3 id="resultTitle">发布成功</h3>
+          <p class="sub" id="resultSub"></p>
+        </div>
+      </div>
+      <div class="result-actions" id="resultActions"></div>
+      <div class="warn-list" id="resultWarnings"></div>
+    </div>
+
+    <div class="tip-card">
+      <strong>小提示</strong>
+      <p>重复发布同一篇文档会自动更新原文章，不会产生重复博客。想发新的一篇，勾选「强制新建」。</p>
+    </div>
+  </section>
+
+  <!-- ============ 右：预览区 ============ -->
+  <section class="panel preview-panel">
+    <div class="preview-toolbar">
+      <div class="preview-title">
+        <h2>预览</h2>
+        <span class="pill" id="statPill" hidden></span>
+      </div>
+      <div class="preview-actions">
+        <button class="ghost-btn sm" id="btnCopyMd" disabled>复制 Markdown</button>
+        <button class="ghost-btn sm" id="btnDownload" disabled>下载 .md</button>
+      </div>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <div class="empty">
+        <div class="empty-art">✍️</div>
+        <h3>还没有内容</h3>
+        <p>左边粘贴飞书文档链接，点「读取并预览」<br>转换结果会实时显示在这里</p>
+        <ul class="empty-tips">
+          <li>标题、代码块、表格、列表都会保留</li>
+          <li>图片自动换成博客园图床</li>
+          <li>发布前可以先检查排版</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ 发布记录抽屉 ============ -->
+<aside class="drawer" id="historyDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>发布记录</h2>
+    <button class="icon-btn" id="btnCloseHistory">✕</button>
+  </div>
+  <p class="sub">记录"哪个飞书文档 → 哪篇博客"，重复发布会更新同一篇。</p>
+  <div class="history-list" id="historyList"></div>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+
+<!-- ============ 设置弹窗 ============ -->
+<div class="modal" id="settingsModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>设置</h2>
+      <button class="icon-btn" id="btnCloseSettings">✕</button>
+    </div>
+    <p class="sub">凭据只保存在本机 <code id="cfgPath">~/.feishu2cnblogs/config.json</code>，不会上传。</p>
+
+    <h3 class="section-title"><span class="dot"></span>飞书自建应用</h3>
+    <label class="field">
+      <span class="field-label">App ID</span>
+      <input id="setAppId" type="text" spellcheck="false" placeholder="cli_xxxxxxxx">
+    </label>
+    <label class="field">
+      <span class="field-label">App Secret <em>留空表示不修改</em></span>
+      <input id="setAppSecret" type="password" spellcheck="false" placeholder="已保存则显示为掩码">
+    </label>
+    <label class="field">
+      <span class="field-label">User Access Token <em>可选，不填用应用身份</em></span>
+      <input id="setUserToken" type="password" spellcheck="false" placeholder="u-xxxx">
+    </label>
+
+    <h3 class="section-title"><span class="dot"></span>博客园</h3>
+    <label class="field">
+      <span class="field-label">登录用户名</span>
+      <input id="setUsername" type="text" spellcheck="false" placeholder="登录名，不是昵称">
+    </label>
+    <label class="field">
+      <span class="field-label">博客名 <em>博客地址 www.cnblogs.com/ 后面那段</em></span>
+      <input id="setBlog" type="text" spellcheck="false" placeholder="my-blog">
+    </label>
+    <label class="field">
+      <span class="field-label">访问令牌 <em>后台 → 设置 → 开放 API 生成</em></span>
+      <input id="setToken" type="password" spellcheck="false" placeholder="已保存则显示为掩码">
+    </label>
+    <label class="field">
+      <span class="field-label">默认分类 / 标签 <em>逗号分隔，可留空</em></span>
+      <div class="two-col">
+        <input id="setCategories" type="text" placeholder="工具,效率">
+        <input id="setTags" type="text" placeholder="飞书,自动化">
+      </div>
+    </label>
+
+    <div class="modal-actions">
+      <button class="ghost-btn" id="btnTestConn">测试连接</button>
+      <button class="btn btn-primary" id="btnSaveSettings">保存</button>
+    </div>
+    <div class="check-result" id="checkResult" hidden></div>
+
+    <div class="bookmarklet">
+      <strong>一键打开（书签工具）</strong>
+      <p>复制下面这段，新建一个浏览器书签，把它粘到「网址」栏。以后在任意飞书文档页面点这个书签，会自动带着当前文档链接打开本工具。</p>
+      <div class="input-row">
+        <input id="bookmarkletUrl" type="text" readonly>
+        <button class="ghost-btn sm" id="btnCopyBookmarklet">复制</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 进度浮层 ============ -->
+<div class="progress-card" id="progressCard" hidden>
+  <div class="progress-head">
+    <span class="spinner spinner-dark"></span>
+    <strong id="progressTitle">正在发布…</strong>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-log" id="progressLog"></div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="/static/markdown.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
